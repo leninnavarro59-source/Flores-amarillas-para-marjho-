@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Para Marjhorit 🌻</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:Georgia,serif;background:#050014;color:#fff}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+.card{max-width:560px;position:relative;z-index:2}
+.small{font-size:18px;letter-spacing:2px;margin-bottom:18px}
+h1{font-size:clamp(42px,12vw,78px);line-height:.95;margin:0 0 22px;text-shadow:0 0 18px #ffd43b}
+p{font-size:clamp(20px,5vw,28px);line-height:1.35;margin:14px 0}
+button{margin-top:20px;border:1px solid #ffd43b;background:linear-gradient(135deg,#ffcc33,#ff8c00);color:#210900;border-radius:999px;padding:14px 24px;font-size:18px;font-weight:bold;box-shadow:0 0 24px #ffb30088}
+#universe{display:none}
+.message{position:fixed;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90%,650px);padding:28px;border-radius:24px;background:#080018cc;border:1px solid #ffd43b88;box-shadow:0 0 45px #ffd43b44;text-align:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:1s}
+.message.show{opacity:1;pointer-events:auto}
+.message h2{font-size:clamp(32px,8vw,55px);margin:0 0 16px;color:#ffd43b}
+.message p{font-size:clamp(18px,4.5vw,25px)}
+.close{background:#fff;color:#321500;box-shadow:none;margin-top:8px}
+#surprise{position:fixed;inset:0;pointer-events:none;z-index:5}
+.flower{position:absolute;font-size:28px;animation:fall linear forwards}
+@keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas>
+
+<div class="screen" id="intro">
+  <div class="card">
+    <div class="small">PARA TI, MARJHORIT 🌻</div>
+    <h1>Feliz Día de las<br>Flores Amarillas</h1>
+    <p>Hoy quiero regalarte algo diferente:<br>un pequeño universo hecho para ti. 💛</p>
+    <button id="enter">Entrar a nuestro universo ✨</button>
+  </div>
+</div>
+
+<div class="message" id="message">
+  <h2>MARJHORIT ❤️</h2>
+  <p>Entre tantas estrellas, mi favorita eres tú.</p>
+  <p>Hoy las flores son amarillas,<br>pero mi regalo eres tú. 🌻💛</p>
+  <p>Que nunca te falten motivos para sonreír y días llenos de luz.</p>
+  <p>Te quiero muchísimo. Siempre tú. ❤️</p>
+  <button class="close" id="surpriseBtn">Una pequeña sorpresa 🌻</button>
+</div>
+<div id="surprise"></div>
+
+<script>
+const c=document.getElementById('space'),x=c.getContext('2d');
+let w,h,stars=[],flowers=[],running=false,t=0;
+function resize(){w=c.width=innerWidth*devicePixelRatio;h=c.height=innerHeight*devicePixelRatio;x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);w=innerWidth;h=innerHeight}
+addEventListener('resize',resize);resize();
+for(let i=0;i<260;i++)stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.8+.2,a:Math.random()});
+for(let i=0;i<18;i++)flowers.push({a:i*Math.PI*2/18,r:80+Math.random()*130,s:Math.random()*.7+.5});
+function draw(){
+ t+=.008;x.clearRect(0,0,w,h);
+ let g=x.createRadialGradient(w/2,h/2,20,w/2,h/2,Math.max(w,h)*.7);
+ g.addColorStop(0,'#170044');g.addColorStop(.5,'#080022');g.addColorStop(1,'#020008');x.fillStyle=g;x.fillRect(0,0,w,h);
+ stars.forEach(s=>{x.globalAlpha=.35+.65*Math.abs(Math.sin(t*2+s.a*5));x.fillStyle='#fff';x.beginPath();x.arc(s.x*w,s.y*h,s.r,0,7);x.fill()});
+ x.globalAlpha=1;
+ let cx=w/2,cy=h/2;
+ x.save();x.translate(cx,cy);x.rotate(t*.35);
+ x.strokeStyle='#ffd43b55';x.lineWidth=1;
+ for(let q=0;q<4;q++){x.beginPath();x.ellipse(0,0,90+q*38,35+q*18,q*.65,0,Math.PI*2);x.stroke()}
+ x.restore();
+ flowers.forEach((f,i)=>{let a=f.a+t*f.s*.35,rx=(90+f.r*.55)*Math.cos(a),ry=(35+f.r*.25)*Math.sin(a);let px=cx+rx,py=cy+ry;
+   x.font='26px serif';x.textAlign='center';x.fillText('🌻',px,py);
+ });
+ // corazón
+ let pulse=1+Math.sin(t*3)*.06;x.save();x.translate(cx,cy);x.scale(pulse,pulse);x.font='90px serif';x.textAlign='center';x.textBaseline='middle';x.shadowBlur=30;x.shadowColor='#ff3b6b';x.fillText('❤️',0,0);x.restore();
+ requestAnimationFrame(draw)
+}
+draw();
+document.getElementById('enter').onclick=()=>{document.getElementById('intro').style.display='none';document.getElementById('message').classList.add('show');running=true};
+document.getElementById('surpriseBtn').onclick=()=>{
+ for(let i=0;i<45;i++){let f=document.createElement('div');f.className='flower';f.textContent='🌻';f.style.left=Math.random()*100+'%';f.style.animationDuration=(2+Math.random()*4)+'s';f.style.animationDelay=(Math.random()*.8)+'s';document.getElementById('surprise').appendChild(f);setTimeout(()=>f.remove(),6000)}
+};
+</script>
+</body>
+</html>
